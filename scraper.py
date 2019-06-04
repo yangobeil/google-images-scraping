@@ -5,18 +5,35 @@ Created on Tue Jun  4 10:14:56 2019
 @author: Yan
 """
 
+# based off https://gist.github.com/genekogan/ebd77196e4bf0705db51f86431099e57
+# and https://www.pyimagesearch.com/2017/12/04/how-to-create-a-deep-learning-dataset-using-google-images/
 from bs4 import BeautifulSoup
 import os
 import requests
 import json
+import cv2
+import argparse
 
-word = 'cat'
+parser = argparse.ArgumentParser()
+
+parser.add_argument('word', help='word to search on google')
+parser.add_argument('-d', '--directory')
+
+args = parser.parse_args()
+
+word = args.word
 headers = {'User-Agent':"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.134 Safari/537.36"}
 url = 'https://www.google.com/search?q=' + word + '&source=lnms&tbm=isch'
 page = requests.get(url, headers=headers)
 soup = BeautifulSoup(page.content, features="lxml")
 
-directory = 'C:\\Users\\Yan\\Dropbox\\Machine learning\\images google'
+if args.directory:
+    directory = args.directory
+else:
+    directory = os.getcwd()
+
+directory = os.path.join(directory, word)
+os.mkdir(directory)
 
 links = []
 types = []
@@ -32,6 +49,8 @@ num_images = len(links)
 for i in range(num_images):
     img = requests.get(links[i])
     file_name = str(i) + '.' + types[i]
-    path = os.path.join(directory, file_name)
-    with open(path, 'wb') as image_file:
+    image_path = os.path.join(directory, file_name)
+    with open(image_path, 'wb') as image_file:
         image_file.write(img.content)
+    if cv2.imread(image_path) is None:
+        os.remove(image_path)
