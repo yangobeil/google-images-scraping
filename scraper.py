@@ -22,35 +22,41 @@ parser.add_argument('-d', '--directory')
 args = parser.parse_args()
 
 word = args.word
-headers = {'User-Agent':"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.134 Safari/537.36"}
-url = 'https://www.google.com/search?q=' + word + '&source=lnms&tbm=isch'
-page = requests.get(url, headers=headers)
-soup = BeautifulSoup(page.content, features="lxml")
-
 if args.directory:
-    directory = args.directory
+    parentdir = args.directory
 else:
-    directory = os.getcwd()
+    parentdir = None
 
-directory = os.path.join(directory, word)
-os.mkdir(directory)
-
-links = []
-types = []
-for image in soup.find_all('div', {'class':'rg_meta'}):
-    link = json.loads(image.text)['ou']
-    type = json.loads(image.text)['ity']
-    if type:
-        links.append(link)
-        types.append(type)
-
-num_images = len(links)
-
-for i in range(num_images):
-    img = requests.get(links[i])
-    file_name = str(i) + '.' + types[i]
-    image_path = os.path.join(directory, file_name)
-    with open(image_path, 'wb') as image_file:
-        image_file.write(img.content)
-    if cv2.imread(image_path) is None:
-        os.remove(image_path)
+def scrape(word, parentdir=None):
+    headers = {'User-Agent':"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.134 Safari/537.36"}
+    url = 'https://www.google.com/search?q=' + word + '&source=lnms&tbm=isch'
+    page = requests.get(url, headers=headers)
+    soup = BeautifulSoup(page.content, features="lxml")
+    
+    if not parentdir:
+        parentdir = os.getcwd()
+    directory = os.path.join(parentdir, word)
+    os.mkdir(directory)
+    
+    links = []
+    types = []
+    for image in soup.find_all('div', {'class':'rg_meta'}):
+        link = json.loads(image.text)['ou']
+        type = json.loads(image.text)['ity']
+        if type:
+            links.append(link)
+            types.append(type)
+    
+    num_images = len(links)
+    
+    for i in range(num_images):
+        img = requests.get(links[i])
+        file_name = str(i) + '.' + types[i]
+        image_path = os.path.join(directory, file_name)
+        with open(image_path, 'wb') as image_file:
+            image_file.write(img.content)
+        if cv2.imread(image_path) is None:
+            os.remove(image_path)
+            
+if __name__ == '__main__':
+    scrape(word, parentdir)
