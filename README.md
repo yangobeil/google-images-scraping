@@ -10,3 +10,5 @@ python scraper.py word -d directory
 The word is the query and the directory is an option to specify where to save the images. If no directoy is specified the program creates a directory called word. The images are names image_###.jpg and the numbering starts where the already existing files stop.
 
 It is also possible to import the function 'scrape' into another script to run the scraper. The arguments are the same as before: word and directory (optional).
+
+If you specify the directory yourself, make sure that you have created it beforehand because otherwise the images will just not be saved...
