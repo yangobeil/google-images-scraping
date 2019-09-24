@@ -75,7 +75,8 @@ def scrape(word, directory=None):
     if not directory:
         parentdir = os.getcwd()
         directory = os.path.join(parentdir, word)
-        os.mkdir(directory)
+        if not os.path.exists(directory):
+            os.mkdir(directory)
     
     links = []
     types = []
