@@ -65,7 +65,7 @@ def extract_image(link, file_name, directory):
 
 def scrape(word, directory=None):
     '''Searches for word in Google images and downloads all the valid jpg images. 
-    Files are saved under name_###.jpg in the specified directory (or current is unspecified).'''
+    Files are saved under image_###.jpg in the specified directory (or current is unspecified).'''
     
     headers = {'User-Agent':"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.134 Safari/537.36"}
     url = 'https://www.google.com/search?q=' + word + '&source=lnms&tbm=isch'
