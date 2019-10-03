@@ -15,23 +15,6 @@ import cv2
 import argparse
 import glob
 
-#---------------------------- Arguments for parser version ------------------
-
-parser = argparse.ArgumentParser()
-
-parser.add_argument('word', help='word to search on google')
-parser.add_argument('-d', '--directory')
-
-args = parser.parse_args()
-
-word = args.word
-if args.directory:
-    directory = args.directory
-else:
-    directory = None
-    
-#---------------------------- Function to scrape that can be imported ------------------
-
 
 def max_label(name, folder):
     '''Find all the files with pattern name_###.* inside the folder and find
@@ -99,4 +82,12 @@ def scrape(word, directory=None):
             
         
 if __name__ == '__main__':
-    scrape(word, directory)
+    
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('word', help='word to search on google')
+    parser.add_argument('-d', '--directory', default=None)
+
+    args = parser.parse_args()
+            
+    scrape(args.word, args.directory)
